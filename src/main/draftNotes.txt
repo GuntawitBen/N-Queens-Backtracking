@@ -1,0 +1,72 @@
+// Backtracking to solve the N-Queens problem and automatically place the remaining queens
+    private void solveNQueens() {
+        ArrayList<Point> solution = new ArrayList<>();
+        boolean[] rows = new boolean[queenTable.getBoardSize() + 1];
+        boolean[] diag1 = new boolean[2 * queenTable.getBoardSize() + 1];
+        boolean[] diag2 = new boolean[2 * queenTable.getBoardSize() + 1];
+
+        solveNQueensUtil(1, solution, rows, diag1, diag2);
+
+        // Print the solution
+        queenTable.printTable(solution);
+    }
+
+    // Recursive utility for backtracking to place queens
+    private void solveNQueensUtil(int col, ArrayList<Point> solution, boolean[] rows,
+                                  boolean[] diag1, boolean[] diag2) {
+        if (col > queenTable.getBoardSize()) {
+            // All queens placed, update allPoints with the solution
+            allPoints.clear(); // Clear any manually placed queens
+            allPoints.addAll(solution); // Add the solution queens
+            return;
+        }
+
+        for (int row = 1; row <= queenTable.getBoardSize(); row++) {
+            if (!rows[row] && !diag1[row + col] && !diag2[row - col + queenTable.getBoardSize()]) {
+                // Place the queen
+                rows[row] = diag1[row + col] = diag2[row - col + queenTable.getBoardSize()] = true;
+                solution.add(new Point(row, col));
+
+                // Recurse for next column
+                solveNQueensUtil(col + 1, solution, rows, diag1, diag2);
+
+                // Backtrack
+                solution.remove(solution.size() - 1);
+                rows[row] = diag1[row + col] = diag2[row - col + queenTable.getBoardSize()] = false;
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    static List<List<Integer>> nQueen(int n, ArrayList<Point> allPoints) {
+            List<List<Integer>> result = new ArrayList<>();
+
+            // BOOLEAN ARRAY TO TRACK IF IT IS OCCUPIED
+            boolean[] rows = new boolean[n + 1];
+            boolean[] diag1 = new boolean[2 * n + 1]; // for \ diagonal
+            boolean[] diag2 = new boolean[2 * n + 1]; // for / diagonal
+
+            // USING ALLPOINTS TO MARK ROW, COL, DIAG AS OCCUPIED = TRUE
+            for (Point p : allPoints) {
+                int row = p.getX();
+                int col = p.getY();
+                rows[row] = true;
+                diag1[col - row + n] = true; // \ diagonal
+                diag2[col + row] = true; // / diagonal
+            }
+
+            // Start solving from the next column after the last manually placed queen
+            nQueenUtil(1, n, new ArrayList<>(), result, rows, diag1, diag2);
+
+            return result;
+        }
